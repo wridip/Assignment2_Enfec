@@ -53,6 +53,10 @@ if st.button("Search") and query:
 
             if semantic_response.status_code == 200:
                 data = semantic_response.json()
+
+                if data.get("cached"):
+                    st.success(" Served from Redis Cache")
+                    
                 st.success(f"Response Time: {data['response_time']} sec")
                 st.caption(f"Results Found: {len(data['results'])}")
                 
