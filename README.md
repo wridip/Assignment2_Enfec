@@ -128,3 +128,21 @@ Keyword search relies on exact character matching (using `ILIKE` in this project
 
 Example:
 If a user searches for "How do computers learn from data?", keyword search might only return "What is Machine Learning?" because it contains the phrase "learn from data". However, semantic search will also return "Deep Learning Overview", "Neural Networks Explained", and "Reinforcement Learning Concepts" because it understands these topics are subsets or related concepts of computers learning from data, even if those specific words are missing from their descriptions.
+
+ARCHITECTURE:
+
+User  
+    ↓   
+Streamlit
+    ↓
+Django API
+    ↓
+Redis (check) → If Hit → Return 
+    ↓
+If miss → LLM embedding → PostgreSQL vector
+    ↓
+search
+    ↓
+Store in Redis
+    ↓
+Return
