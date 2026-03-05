@@ -131,6 +131,8 @@ If a user searches for "How do computers learn from data?", keyword search might
 
 ARCHITECTURE:
 
+```
+
 User  
     ↓   
 Streamlit
@@ -146,3 +148,4 @@ search
 Store in Redis
     ↓
 Return
+```
