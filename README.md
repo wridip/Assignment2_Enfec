@@ -25,47 +25,40 @@ Option A: Install on Windows (Native x64)
    nmake /F Makefile.win install
    ```
 
-Option B: Use Docker (Recommended)
+Option B: ## 🛠️ Setup Instructions
+
+### 1. Clone the Repository
+```
+git clone <repository-url>
+cd <repository-name>
+```
+
+### 2. Configure Environment Variables
+Copy the example environment file and update it with your credentials:
+```
+cp .env.example .env
+```
+Edit `.env` and set your `DB_PASSWORD` and other configurations.
+
+### 3. Start Infrastructure (Docker)
+The easiest way to run the database and cache is using Docker:
+
+**PostgreSQL with pgvector:**
+```
+docker run --name semantic-db -e POSTGRES_PASSWORD=your_secure_password -p 5433:5432 -d pgvector/pgvector:pg16
+```
+*(Ensure the password matches what you put in `.env`)*
+
+**Redis:**
+```
+docker run --name semantic-redis -p 6379:6379 -d redis
+```
+
+### 4. Initialize Database
+Connect to the PostgreSQL instance and create the database and extension:
 ```bash
-docker run --name semantic-db -e POSTGRES_PASSWORD=YOUR_DB_PASSWORD -p 5433:6379 -d pgvector/pgvector:pg16
-```
-
-After Container Starts
-Connect: 
-```
-docker exec -it YOUR_DB_NAME psql -U postgres
-```
-
-Then create databse:
-```
-CREATE DATABASE semantic_search;
-\c semantic_search
-```
-
-Connect to your database and run:
-```sql
-CREATE EXTENSION IF NOT EXISTS vector;
-```
-
-### 3. Create table using either PSQL tool or Query tool
-IMPORTANT: `all-MiniLM-L6-v2` produces 384-dimensional vectors (NOT 1536).
-
-Correct schema:
-```sql
-CREATE TABLE documents (
-  id SERIAL PRIMARY KEY,
-  title VARCHAR(500),
-  content TEXT,
-  embedding VECTOR(384)
-);
-```
-
-### 4. Create vector index
-```sql
-CREATE INDEX ON documents
-USING ivfflat (embedding vector_cosine_ops);
-```
-
+docker exec -it semantic-db psql -U postgres -c "CREATE DATABASE semantic_db;"
+docker exec -it semantic-db psql -U postgres -d semantic_db -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ---
 
 ## 2. Setup Virtual Environment
