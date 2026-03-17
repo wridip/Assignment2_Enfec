@@ -4,7 +4,7 @@ This project demonstrates the difference between Keyword Search (Exact match) an
 
 ---
 
-## ✅ STEP 1 – Setup PostgreSQL with pgvector
+## STEP 1 – Setup PostgreSQL with pgvector
 
 ### 1. Install PostgreSQL
 If Windows:
@@ -25,93 +25,72 @@ Option A: Install on Windows (Native x64)
    nmake /F Makefile.win install
    ```
 
-Option B: ## 🛠️ Setup Instructions
+Option B: ## Setup Instructions
 
-### 1. Clone the Repository
-```
-git clone <repository-url>
-cd <repository-name>
-```
-
-### 2. Configure Environment Variables
+### 3. Configure Environment Variables
 Copy the example environment file and update it with your credentials:
-```
+```bash
 cp .env.example .env
 ```
 Edit `.env` and set your `DB_PASSWORD` and other configurations.
 
-### 3. Start Infrastructure (Docker)
+### 4. Start Infrastructure (Docker)
 The easiest way to run the database and cache is using Docker:
 
 **PostgreSQL with pgvector:**
-```
+```bash
 docker run --name semantic-db -e POSTGRES_PASSWORD=your_secure_password -p 5433:5432 -d pgvector/pgvector:pg16
 ```
 *(Ensure the password matches what you put in `.env`)*
 
 **Redis:**
-```
+```bash
 docker run --name semantic-redis -p 6379:6379 -d redis
 ```
 
-### 4. Initialize Database
+### 5. Initialize Database
 Connect to the PostgreSQL instance and create the database and extension:
 ```bash
 docker exec -it semantic-db psql -U postgres -c "CREATE DATABASE semantic_db;"
 docker exec -it semantic-db psql -U postgres -d semantic_db -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+
+### 6. Setup Python Environment
+```bash
+python -m venv venv
+# Windows:
+venv\Scripts\activate
+# Mac/Linux:
+source venv/bin/activate
+
+pip install -r requirements.txt
+```
 ---
 
-## 2. Setup Virtual Environment
+## Data Ingestion
 
-It is recommended to use a virtual environment to manage project dependencies.
-
-1.  Create a virtual environment:
-    ```bash
-    python -m venv venv
-    ```
-2.  Activate the virtual environment:
-    - Windows: `venv\Scripts\activate`
-    - Mac/Linux: `source venv/bin/activate`
-3.  Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
+Load the sample documents into the database:
+```bash
+cd backend
+python ingest.py
+cd ..
+```
 ---
 
-## 3. How to load sample documents
+## Running the Application
 
-1.  Ensure your database is configured in `backend/core/settings.py` and `backend/ingest.py`.
-2.  Navigate to the backend directory:
-    ```bash
-    cd backend
-    ```
-3.  Run the ingestion script:
-    ```bash
-    python ingest.py
-    ```
+### 1. Start Django Backend
+```bash
+cd backend
+python manage.py migrate
+python manage.py runserver
+```
 
----
-
-## 4. How to run the app
-
-### Start the Backend (Django)
-1.  Apply migrations:
-    ```bash
-    python manage.py migrate
-    ```
-2.  Start the server:
-    ```bash
-    python manage.py runserver
-    ```
-
-### Start the Frontend (Streamlit)
-1.  Open a new terminal (with the virtual environment activated).
-2.  Run the Streamlit app:
-    ```bash
-    streamlit run ui/app.py
-    ```
-
+### 2. Start Streamlit Frontend
+Open a new terminal, activate the virtual environment, and run:
+```bash
+streamlit run ui/app.py
+```
 ---
 
 ## 5. Comparison Notes
@@ -141,4 +120,5 @@ search
 Store in Redis
     ↓
 Return
+
 ```
