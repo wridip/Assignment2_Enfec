@@ -5,15 +5,19 @@ import pandas as pd
 import psycopg2
 from psycopg2.extras import execute_values
 from sentence_transformers import SentenceTransformer
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 # ----------------------------
 # Configuration
 # ----------------------------
-DB_NAME = "semantic_db"
-DB_USER = "postgres"
-DB_PASSWORD = "yourpassword"
-DB_HOST = "localhost"
-DB_PORT = "5433"
+DB_NAME = os.getenv("DB_NAME", "semantic_db")
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
 
 CSV_PATH = "../data/documents.csv"
 BATCH_SIZE = 10  # insert in small batches
@@ -31,11 +35,11 @@ print("Model loaded successfully.")
 def get_connection():
     try:
         conn = psycopg2.connect(
-            dbname="DB_NAME",
-            user="DB_USER",
-            password="DB_PASSWORD",
-            host="DB_HOST",
-            port="DB_PORT"
+            dbname=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT
         )
         print("Connected to PostgreSQL.")
         return conn

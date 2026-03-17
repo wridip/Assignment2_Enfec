@@ -1,20 +1,23 @@
+import os
+import json
+import time
+import redis
 from django.shortcuts import render
-
-# Create your views here.
 from django.http import JsonResponse
 from django.db import connection
 from sentence_transformers import SentenceTransformer
 from django.views.decorators.csrf import csrf_exempt
-import time
-import json
-import redis
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 
 # Load model once (VERY IMPORTANT)
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 redis_client = redis.Redis(
-    host='localhost',
-    port=6379,
+    host=os.getenv('REDIS_HOST', 'localhost'),
+    port=int(os.getenv('REDIS_PORT', 6379)),
     db=0,
     decode_responses=True
 )
@@ -118,11 +121,4 @@ def semantic_search(request):
     redis_client.setex(cache_key, 3600, json.dumps(response_data))
 
     return JsonResponse(response_data)
-"""
-    return JsonResponse({
-        "type": "semantic",
-        "response_time": round(time.time() - start, 4),
-        "results": results
-    })
-"""
 
